@@ -14,27 +14,19 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.imihirpaldhikar.daywise.data.sources
+package com.imihirpaldhikar.daywise.data.models.database
 
-import androidx.room.*
-import com.imihirpaldhikar.daywise.data.models.database.Note
-import kotlinx.coroutines.flow.Flow
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-@Dao
-interface NotesSource {
-
-    @Query("SELECT * FROM notes ORDER BY updated_on DESC")
-    fun getNotes(): Flow<List<Note>>
-
-    @Query("SELECT * FROM notes WHERE id LIKE :id")
-    suspend fun getNoteById(id: String): Note?
-
-    @Update(entity = Note::class, onConflict = OnConflictStrategy.REPLACE)
-    suspend fun updateNote(note: Note)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun addNote(note: Note)
-
-    @Delete
-    suspend fun deleteNote(note: Note)
-}
+@Entity(tableName = "notes")
+data class Note(
+    @PrimaryKey(autoGenerate = false)
+    val id: String,
+    val title: String,
+    val description: String,
+    val content: String,
+    @ColumnInfo(name = "created_on") val createdOn: Long,
+    @ColumnInfo(name = "updated_on") val updatedOn: Long
+)

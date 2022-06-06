@@ -14,27 +14,16 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.imihirpaldhikar.daywise.data.sources
+package com.imihirpaldhikar.daywise.events
 
-import androidx.room.*
 import com.imihirpaldhikar.daywise.data.models.database.Note
-import kotlinx.coroutines.flow.Flow
 
-@Dao
-interface NotesSource {
-
-    @Query("SELECT * FROM notes ORDER BY updated_on DESC")
-    fun getNotes(): Flow<List<Note>>
-
-    @Query("SELECT * FROM notes WHERE id LIKE :id")
-    suspend fun getNoteById(id: String): Note?
-
-    @Update(entity = Note::class, onConflict = OnConflictStrategy.REPLACE)
-    suspend fun updateNote(note: Note)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun addNote(note: Note)
-
-    @Delete
-    suspend fun deleteNote(note: Note)
+sealed class NoteEvent {
+    data class NoteTitleChanged(val title: String) : NoteEvent()
+    data class NoteDescriptionChanged(val description: String) : NoteEvent()
+    data class NoteContentChanged(val content: String) : NoteEvent()
+    data class UpdateNote(val noteId: String) : NoteEvent()
+    data class DeleteNote(val note: Note) : NoteEvent()
+    data class LoadNote(val noteId: String) : NoteEvent()
+    object SaveNote : NoteEvent()
 }

@@ -14,37 +14,41 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.imihirpaldhikar.daywise.data.repositories
+package com.imihirpaldhikar.daywise.viewmodels
 
-import com.imihirpaldhikar.daywise.AppDatabase
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.imihirpaldhikar.daywise.data.models.database.Note
-import kotlinx.coroutines.flow.Flow
+import com.imihirpaldhikar.daywise.data.repositories.NotesRepository
+import com.imihirpaldhikar.daywise.states.OperationState
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class NotesRepository @Inject constructor(
-    appDatabase: AppDatabase
-) {
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val notesRepository: NotesRepository
+) : ViewModel() {
 
-    private val notesSource = appDatabase.notesDao()
+    private val operationChannel = Channel<OperationState<Unit>>()
+    val operationState = operationChannel.receiveAsFlow()
 
-    suspend fun getAllNotes(): Flow<List<Note>> {
-        return notesSource.getNotes()
+    var notes by mutableStateOf<List<Note>>(emptyList())
+
+    init {
+        viewModelScope.launch {
+            notesRepository.getAllNotes().collect {
+                if (it.isNotEmpty()) {
+                    notes = it
+                    Log.d("DATA", notes.toString())
+                }
+            }
+        }
     }
-
-    suspend fun getNoteById(noteId: String): Note? {
-        return notesSource.getNoteById(noteId)
-    }
-
-    suspend fun updateNote(note: Note) {
-        return notesSource.updateNote(note)
-    }
-
-    suspend fun deleteNote(note: Note) {
-        return notesSource.deleteNote(note)
-    }
-
-    suspend fun addNote(note: Note) {
-        return notesSource.addNote(note)
-    }
-
 }

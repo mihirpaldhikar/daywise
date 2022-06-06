@@ -14,20 +14,13 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.imihirpaldhikar.daywise.data.models
+package com.imihirpaldhikar.daywise.data.models.parcelize
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import com.imihirpaldhikar.daywise.utils.RandomUID
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-@Entity(tableName = "notes")
-data class Note(
-    @PrimaryKey(autoGenerate = false)
-    val id: String = RandomUID.generate,
-    val title: String,
-    val description: String,
-    val content: String,
-    @ColumnInfo(name = "created_on") val createdOn: Long,
-    @ColumnInfo(name = "updated_on") val updatedOn: Long
-)
+@Parcelize
+data class NoteParcel(
+    val noteId: String,
+    val isUpdate: Boolean = false
+) : Parcelable

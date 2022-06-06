@@ -18,7 +18,7 @@ package com.imihirpaldhikar.daywise
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.imihirpaldhikar.daywise.data.models.Note
+import com.imihirpaldhikar.daywise.data.models.database.Note
 import com.imihirpaldhikar.daywise.data.sources.NotesSource
 
 @Database(entities = [Note::class], version = 1)
