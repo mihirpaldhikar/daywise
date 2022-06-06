@@ -17,15 +17,18 @@
 package com.imihirpaldhikar.daywise.presentations
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -57,6 +60,13 @@ fun HomeScreen(
             }) {
                 Icon(Icons.Outlined.Add, contentDescription = "Add Note")
             }
+        },
+        topBar = {
+            SmallTopAppBar(
+                title = {
+                    Text(text = "Daywise")
+                }
+            )
         }
     ) { padding ->
         Box(
@@ -79,7 +89,6 @@ fun HomeScreen(
                     .padding(
                         end = 10.dp,
                         start = 10.dp,
-                        top = 20.dp
                     ),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 content = {
@@ -107,21 +116,33 @@ fun HomeScreen(
                                         .padding(
                                             end = 15.dp,
                                             start = 15.dp,
-                                            top = 20.dp,
-                                            bottom = 20.dp,
+                                            top = 15.dp,
+                                            bottom = 10.dp,
                                         )
                                 ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = notes[it].title,
+                                            style = MaterialTheme.typography.titleLarge,
+                                            modifier = Modifier.padding(bottom = 5.dp),
+                                            maxLines = 2,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                        Box(
+                                            modifier = Modifier
+                                                .size(10.dp)
+                                                .clip(CircleShape)
+                                                .background(MaterialTheme.colorScheme.error)
+                                        )
+                                    }
                                     Text(
-                                        text = notes[it].title,
-                                        style = MaterialTheme.typography.titleLarge,
-                                        modifier = Modifier.padding(bottom = 5.dp),
-                                        maxLines = 2,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                    Text(
-                                        text = notes[it].description,
+                                        text = notes[it].content,
                                         style = MaterialTheme.typography.bodyMedium,
-                                        maxLines = 4,
+                                        maxLines = 2,
                                         overflow = TextOverflow.Ellipsis,
                                     )
                                     Row(

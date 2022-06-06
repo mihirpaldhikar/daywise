@@ -25,7 +25,6 @@ data class Note(
     @PrimaryKey(autoGenerate = false)
     val id: String,
     val title: String,
-    val description: String,
     val content: String,
     @ColumnInfo(name = "created_on") val createdOn: Long,
     @ColumnInfo(name = "updated_on") val updatedOn: Long

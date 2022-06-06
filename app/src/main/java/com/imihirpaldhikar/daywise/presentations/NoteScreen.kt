@@ -124,42 +124,22 @@ fun NoteScreen(
         ) {
             LazyColumn(content = {
                 item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-                    ) {
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)) {
                         TextField(
-                            value = noteState.description,
-                            placeholder = {
-                                Text(text = "Description...")
-                            },
+                            value = noteState.content,
                             colors = TextFieldDefaults.textFieldColors(
                                 containerColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent
                             ),
-                            onValueChange = {
-                                noteViewModel.onEvent(
-                                    NoteEvent.NoteDescriptionChanged(
-                                        it
-                                    )
-                                )
+                            placeholder = {
+                                Text(text = "Add your note...")
                             },
-                            modifier = Modifier.fillMaxWidth()
+                            onValueChange = { noteViewModel.onEvent(NoteEvent.NoteContentChanged(it)) },
                         )
                     }
-                }
-                item {
-                    TextField(
-                        value = noteState.content,
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
-                        ),
-                        placeholder = {
-                            Text(text = "Add your note...")
-                        },
-                        onValueChange = { noteViewModel.onEvent(NoteEvent.NoteContentChanged(it)) })
                 }
             })
         }

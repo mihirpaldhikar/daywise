@@ -18,12 +18,9 @@ package com.imihirpaldhikar.daywise.states
 
 data class NoteDataState(
     val title: String = "",
-    val description: String = "",
     val content: String = "",
     val isContentError: Boolean = false,
     val isTitleError: Boolean = false,
-    val isDescriptionError: Boolean = false,
     val titleErrorMessage: String = "",
-    val descriptionErrorMessage: String = "",
     val contentErrorMessage: String = "",
 )

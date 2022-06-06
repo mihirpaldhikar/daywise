@@ -48,9 +48,6 @@ class NoteViewModel @Inject constructor(
             is NoteEvent.NoteTitleChanged -> {
                 noteState = noteState.copy(title = event.title)
             }
-            is NoteEvent.NoteDescriptionChanged -> {
-                noteState = noteState.copy(description = event.description)
-            }
             is NoteEvent.NoteContentChanged -> {
                 noteState = noteState.copy(content = event.content)
             }
@@ -60,7 +57,6 @@ class NoteViewModel @Inject constructor(
                     val rId = RandomUID.generate
                     val noteData = Note(
                         title = noteState.title.trim(),
-                        description = noteState.description.trim(),
                         content = noteState.content.trim(),
                         createdOn = systemTime,
                         updatedOn = systemTime,
@@ -74,7 +70,6 @@ class NoteViewModel @Inject constructor(
                     val systemTime = System.currentTimeMillis()
                     val noteData = notesRepository.getNoteById(event.noteId)!!.copy(
                         title = noteState.title.trim(),
-                        description = noteState.description.trim(),
                         content = noteState.content.trim(),
                         updatedOn = systemTime
                     )
@@ -91,7 +86,6 @@ class NoteViewModel @Inject constructor(
                     val noteData = notesRepository.getNoteById(event.noteId)
                     noteState = noteState.copy(
                         title = noteData!!.title,
-                        description = noteData.description,
                         content = noteData.content
                     )
                 }

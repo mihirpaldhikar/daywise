@@ -20,7 +20,6 @@ import com.imihirpaldhikar.daywise.data.models.database.Note
 
 sealed class NoteEvent {
     data class NoteTitleChanged(val title: String) : NoteEvent()
-    data class NoteDescriptionChanged(val description: String) : NoteEvent()
     data class NoteContentChanged(val content: String) : NoteEvent()
     data class UpdateNote(val noteId: String) : NoteEvent()
     data class DeleteNote(val note: Note) : NoteEvent()
