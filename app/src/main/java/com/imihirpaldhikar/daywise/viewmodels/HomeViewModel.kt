@@ -24,20 +24,16 @@ import androidx.lifecycle.viewModelScope
 import com.imihirpaldhikar.daywise.data.models.database.Note
 import com.imihirpaldhikar.daywise.data.repositories.NotesRepository
 import com.imihirpaldhikar.daywise.events.HomeEvent
-import com.imihirpaldhikar.daywise.states.OperationState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.sql.Date
+import java.text.SimpleDateFormat
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val notesRepository: NotesRepository
 ) : ViewModel() {
-
-    private val operationChannel = Channel<OperationState<Unit>>()
-    val operationState = operationChannel.receiveAsFlow()
 
     var notes by mutableStateOf<List<Note>>(emptyList())
 
@@ -58,6 +54,30 @@ class HomeViewModel @Inject constructor(
                         notes = it
                     }
                 }
+            }
+        }
+    }
+
+    private fun formatDate(date: Long): String {
+        val formatter = SimpleDateFormat("MM/dd/yyyy")
+        return formatter.format(Date(date))
+    }
+
+    fun getCountOfDays(createdDateString: Long): String {
+        val dateFormat = SimpleDateFormat("MM/dd/yyyy")
+        val updatedOnDate = dateFormat.parse(formatDate(createdDateString))!!
+        val systemDate = dateFormat.parse(formatDate(System.currentTimeMillis()))!!
+        val difference = kotlin.math.abs(updatedOnDate.time - systemDate.time)
+        val dayDifference = difference / (24 * 60 * 60 * 1000)
+
+        val days = dayDifference.toString()
+        return if (days == "0") {
+            "Today"
+        } else {
+            if (days == "1") {
+                "Yesterday"
+            } else {
+                "$days days ago"
             }
         }
     }

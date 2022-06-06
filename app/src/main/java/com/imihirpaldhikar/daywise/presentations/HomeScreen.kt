@@ -124,6 +124,13 @@ fun HomeScreen(
                                         maxLines = 4,
                                         overflow = TextOverflow.Ellipsis,
                                     )
+                                    Row(
+                                        modifier = Modifier.fillMaxSize(),
+                                        verticalAlignment = Alignment.Bottom,
+                                        horizontalArrangement = Arrangement.End
+                                    ) {
+                                        Text(text = homeViewModel.getCountOfDays(notes[it].updatedOn))
+                                    }
                                 }
                             }
                             Spacer(modifier = Modifier.height(10.dp))
