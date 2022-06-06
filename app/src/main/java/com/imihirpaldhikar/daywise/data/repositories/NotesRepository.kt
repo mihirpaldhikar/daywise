@@ -1,12 +1,4 @@
-buildscript {
-    ext {
-        compose_version = '1.2.0-beta03'
-        work_version = '2.7.1'
-    }
-    dependencies {
-        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.42'
-    }
-}/*
+/*
  * Copyright 2022 Mihir Paldhikar
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -22,13 +14,36 @@ buildscript {
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-plugins {
-    id 'com.android.application' version '7.2.1' apply false
-    id 'com.android.library' version '7.2.1' apply false
-    id 'org.jetbrains.kotlin.android' version '1.6.21' apply false
-}
+package com.imihirpaldhikar.daywise.data.repositories
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+import com.imihirpaldhikar.daywise.AppDatabase
+import com.imihirpaldhikar.daywise.data.models.Note
+import javax.inject.Inject
+
+class NotesRepository @Inject constructor(
+    appDatabase: AppDatabase
+) {
+
+    private val notesSource = appDatabase.notesDao()
+
+    suspend fun getAllNotes(): List<Note> {
+        return notesSource.getNotes()
+    }
+
+    suspend fun getNoteById(noteId: String): Note? {
+        return notesSource.getNoteById(noteId)
+    }
+
+    suspend fun updateNote(note: Note) {
+        return notesSource.updateNote(note)
+    }
+
+    suspend fun deleteNote(note: Note) {
+        return notesSource.deleteNote(note)
+    }
+
+    suspend fun addNote(note: Note) {
+        return notesSource.addNote(note)
+    }
+
 }

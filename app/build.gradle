@@ -37,6 +37,8 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+
     }
 
     buildTypes {
@@ -86,8 +88,8 @@ dependencies {
 
     // Room Dependencies
     implementation "androidx.room:room-runtime:2.4.2"
+    implementation "androidx.room:room-ktx:2.4.2"
     kapt "androidx.room:room-compiler:2.4.2"
-    implementation "androidx.room:room-paging:2.5.0-alpha02"
 
     // Compose Material Icons Dependency
     implementation "androidx.compose.material:material-icons-extended:1.1.1"

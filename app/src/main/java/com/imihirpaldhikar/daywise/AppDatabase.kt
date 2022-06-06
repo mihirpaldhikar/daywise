@@ -1,12 +1,4 @@
-buildscript {
-    ext {
-        compose_version = '1.2.0-beta03'
-        work_version = '2.7.1'
-    }
-    dependencies {
-        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.42'
-    }
-}/*
+/*
  * Copyright 2022 Mihir Paldhikar
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -22,13 +14,14 @@ buildscript {
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-plugins {
-    id 'com.android.application' version '7.2.1' apply false
-    id 'com.android.library' version '7.2.1' apply false
-    id 'org.jetbrains.kotlin.android' version '1.6.21' apply false
-}
+package com.imihirpaldhikar.daywise
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import com.imihirpaldhikar.daywise.data.models.Note
+import com.imihirpaldhikar.daywise.data.sources.NotesSource
+
+@Database(entities = [Note::class], version = 1)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun notesDao(): NotesSource
 }
