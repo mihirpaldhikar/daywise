@@ -16,7 +16,6 @@
 
 package com.imihirpaldhikar.daywise.viewmodels
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -24,6 +23,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imihirpaldhikar.daywise.data.models.database.Note
 import com.imihirpaldhikar.daywise.data.repositories.NotesRepository
+import com.imihirpaldhikar.daywise.events.HomeEvent
 import com.imihirpaldhikar.daywise.states.OperationState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -44,11 +44,22 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             notesRepository.getAllNotes().collect {
-                if (it.isNotEmpty()) {
-                    notes = it
-                    Log.d("DATA", notes.toString())
+                notes = it
+            }
+        }
+    }
+
+    fun onEvent(event: HomeEvent) {
+        when (event) {
+            is HomeEvent.DeleteNote -> {
+                viewModelScope.launch {
+                    notesRepository.deleteNote(event.note)
+                    notesRepository.getAllNotes().collect {
+                        notes = it
+                    }
                 }
             }
         }
     }
+
 }

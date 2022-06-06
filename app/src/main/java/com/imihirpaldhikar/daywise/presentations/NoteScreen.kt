@@ -21,6 +21,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -65,29 +70,47 @@ fun NoteScreen(
         topBar = {
             SmallTopAppBar(
                 title = {
-                    Text(
-                        text = if (noteParcel !== null) {
-                            "Update Note"
-                        } else {
-                            "New Note"
-                        }
-                    )
+                    TextField(
+                        value = noteState.title,
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        ),
+                        singleLine = true,
+                        placeholder = {
+                            Text(text = "Title...")
+                        },
+                        onValueChange = { noteViewModel.onEvent(NoteEvent.NoteTitleChanged(it)) })
                 },
                 actions = {
-                    Button(onClick = {
-                        if (noteParcel != null) {
-                            noteViewModel.onEvent(NoteEvent.UpdateNote(noteParcel.noteId))
-                        } else {
-                            noteViewModel.onEvent(NoteEvent.SaveNote)
-                        }
+                    IconButton(
+                        enabled = noteState.content.isNotEmpty() && noteState.title.isNotEmpty(),
+                        onClick = {
+                            if (noteParcel != null) {
+                                noteViewModel.onEvent(NoteEvent.UpdateNote(noteParcel.noteId))
+                            } else {
+                                noteViewModel.onEvent(NoteEvent.SaveNote)
+                            }
+                            navigator.navigateUp()
+                        }) {
+                        Icon(
+                            if (noteParcel !== null) {
+                                Icons.Outlined.Check
+                            } else {
+                                Icons.Outlined.Save
+                            }, contentDescription = "Save",
+                            tint = if (noteState.content.isNotEmpty() && noteState.title.isNotEmpty()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+                        )
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
                         navigator.navigateUp()
                     }) {
-                        Text(
-                            text = if (noteParcel !== null) {
-                                "Update"
-                            } else {
-                                "Save"
-                            }
+                        Icon(
+                            if (noteParcel != null) Icons.Outlined.Close else Icons.Outlined.ArrowBack,
+                            contentDescription = "Go Back"
                         )
                     }
                 }
@@ -106,27 +129,10 @@ fun NoteScreen(
                             .fillMaxWidth()
                             .padding(10.dp)
                     ) {
-                        OutlinedTextField(
-                            value = noteState.title,
-                            label = {
-                                Text(text = "Title")
-                            },
-                            singleLine = true,
-                            onValueChange = { noteViewModel.onEvent(NoteEvent.NoteTitleChanged(it)) },
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    }
-                }
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-                    ) {
                         TextField(
                             value = noteState.description,
                             placeholder = {
-                                Text(text = "Description")
+                                Text(text = "Description...")
                             },
                             colors = TextFieldDefaults.textFieldColors(
                                 containerColor = Color.Transparent,

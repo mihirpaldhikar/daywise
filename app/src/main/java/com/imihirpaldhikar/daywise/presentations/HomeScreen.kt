@@ -16,24 +16,28 @@
 
 package com.imihirpaldhikar.daywise.presentations
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.imihirpaldhikar.daywise.data.models.parcelize.NoteParcel
+import com.imihirpaldhikar.daywise.events.HomeEvent
 import com.imihirpaldhikar.daywise.presentations.destinations.NoteScreenDestination
 import com.imihirpaldhikar.daywise.viewmodels.HomeViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Destination(start = true)
 @Composable
 fun HomeScreen(
@@ -60,34 +64,46 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
+            if (notes.isEmpty()) {
+                return@Box Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "No Notes!", textAlign = TextAlign.Center)
+                }
+
+            }
             LazyColumn(
-                modifier = Modifier.padding(
-                    end = 10.dp,
-                    start = 10.dp,
-                    top = 20.dp
-                ),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        end = 10.dp,
+                        start = 10.dp,
+                        top = 20.dp
+                    ),
+                horizontalAlignment = Alignment.CenterHorizontally,
                 content = {
-                    if (notes.isEmpty()) {
-                        return@LazyColumn item {
-                            Text(text = "No Notes!")
-                        }
-                    }
                     items(notes.size) {
                         Column {
                             Card {
                                 Column(
                                     Modifier
                                         .fillMaxWidth()
-                                        .clickable {
-                                            navigator.navigate(
-                                                NoteScreenDestination(
-                                                    noteParcel = NoteParcel(
-                                                        noteId = notes[it].id,
-                                                        isUpdate = true,
+                                        .combinedClickable(
+                                            onClick = {
+                                                navigator.navigate(
+                                                    NoteScreenDestination(
+                                                        noteParcel = NoteParcel(
+                                                            noteId = notes[it].id,
+                                                            isUpdate = true,
+                                                        )
                                                     )
                                                 )
-                                            )
-                                        }
+                                            },
+                                            onLongClick = {
+                                                homeViewModel.onEvent(HomeEvent.DeleteNote(notes[it]))
+                                            }
+                                        )
                                         .padding(
                                             end = 15.dp,
                                             start = 15.dp,
