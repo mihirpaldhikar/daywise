@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -75,6 +76,8 @@ fun NoteScreen(
     val noteViewModel = hiltViewModel<NoteViewModel>()
     val noteState = noteViewModel.noteState
     val noteStatus = noteViewModel.noteStatus
+    val isDarkMode = isSystemInDarkTheme()
+
     LaunchedEffect(noteViewModel, context) {
         if (noteParcel != null) {
             noteViewModel.onEvent(NoteEvent.LoadNote(noteParcel.noteId))
@@ -170,11 +173,14 @@ fun NoteScreen(
                                         Spacer(modifier = Modifier.width(20.dp))
                                     }
                                     items(noteViewModel.priorityList.size) {
+                                        val backGroundColor =
+                                            if (isDarkMode) ColorManager.darkenColor(noteViewModel.priorityList[it].backgroundColor) else noteViewModel.priorityList[it].backgroundColor
+
                                         Box(
                                             modifier = Modifier
                                                 .clip(RoundedCornerShape(10.dp))
                                                 .background(
-                                                    Color(noteViewModel.priorityList[it].backgroundColor)
+                                                    Color(backGroundColor)
                                                 )
                                                 .padding(0.dp)
                                                 .selectable(
@@ -200,9 +206,9 @@ fun NoteScreen(
                                                     colors = RadioButtonDefaults.colors(
                                                         selectedColor = Color(
                                                             ColorManager.getContrastColor(
-                                                                noteViewModel.priorityList[it].backgroundColor
+                                                                backGroundColor
                                                             )
-                                                        )
+                                                        ),
                                                     ),
                                                     onClick = {
                                                         noteViewModel.onEvent(
@@ -217,7 +223,7 @@ fun NoteScreen(
                                                     modifier = Modifier.padding(top = 2.dp),
                                                     color = Color(
                                                         ColorManager.getContrastColor(
-                                                            noteViewModel.priorityList[it].backgroundColor
+                                                            backGroundColor
                                                         )
                                                     ),
                                                     style = MaterialTheme.typography.labelMedium

@@ -17,6 +17,7 @@
 package com.imihirpaldhikar.daywise.presentations
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,10 +30,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.imihirpaldhikar.daywise.R
 import com.imihirpaldhikar.daywise.components.NoteCard
 import com.imihirpaldhikar.daywise.data.models.parcelize.NoteParcel
 import com.imihirpaldhikar.daywise.events.HomeEvent
@@ -113,7 +118,7 @@ fun HomeScreen(
         topBar = {
             SmallTopAppBar(
                 title = {
-                    Text(text = "Daywise")
+                    Text(text = "Daywise", fontWeight = FontWeight.Bold)
                 },
                 actions = {
                     IconButton(onClick = {
@@ -140,7 +145,23 @@ fun HomeScreen(
                 homeViewModel.onEvent(HomeEvent.RefreshNotes)
             }) {
                 if (notes.isEmpty()) {
-                    return@SwipeRefresh Text(text = "No Notes")
+                    return@SwipeRefresh Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Image(
+                            painterResource(id = R.drawable.empty),
+                            contentDescription = "No Notes"
+                        )
+                        Text(
+                            text = "No Notes!",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.W600,
+                            fontSize = 25.sp
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(text = "Create new notes by clicking on the '+'")
+                    }
                 }
 
                 LazyColumn(
