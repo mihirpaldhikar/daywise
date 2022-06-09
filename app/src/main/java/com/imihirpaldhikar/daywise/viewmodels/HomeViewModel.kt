@@ -38,7 +38,6 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     var homeState by mutableStateOf(HomeDataState())
-    var showSortDialog by mutableStateOf<Boolean>(false)
     val sortOptions = listOf<SortNote>(
         SortNote.UPDATED,
         SortNote.PRIORITY,
@@ -53,10 +52,13 @@ class HomeViewModel @Inject constructor(
         when (event) {
             is HomeEvent.DeleteNote -> {
                 viewModelScope.launch {
-                    notesRepository.deleteNote(event.note)
-                    notesRepository.getAllNotesByLastUpdated().collect {
-                        homeState = homeState.copy(notes = it)
+                    if (homeState.selectedNote != null) {
+                        notesRepository.deleteNote(homeState.selectedNote!!)
+                        notesRepository.getAllNotesByLastUpdated().collect {
+                            homeState = homeState.copy(notes = it)
+                        }
                     }
+
                 }
             }
             is HomeEvent.SortNotes -> {
@@ -74,7 +76,7 @@ class HomeViewModel @Inject constructor(
                 }
             }
             is HomeEvent.ShowSortOptions -> {
-                showSortDialog = event.show
+                homeState = homeState.copy(showSortDialog = event.show)
             }
             is HomeEvent.ToggleSort -> {
                 selectedSort = event.sort.ordinal
@@ -101,6 +103,10 @@ class HomeViewModel @Inject constructor(
                         }
                     }
                 }
+            }
+            is HomeEvent.ShowDeleteDialog -> {
+                homeState =
+                    homeState.copy(showDeleteDialog = event.show, selectedNote = event.selectedNote)
             }
         }
     }

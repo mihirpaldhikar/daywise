@@ -20,10 +20,11 @@ import com.imihirpaldhikar.daywise.data.models.database.Note
 import com.imihirpaldhikar.daywise.enums.SortNote
 
 sealed class HomeEvent {
-    data class DeleteNote(val note: Note) : HomeEvent()
     data class SortNotes(val sort: SortNote) : HomeEvent()
     data class ShowSortOptions(val show: Boolean) : HomeEvent()
+    data class ShowDeleteDialog(val show: Boolean, val selectedNote: Note?) : HomeEvent()
     data class ToggleSort(val sort: SortNote) : HomeEvent()
+    object DeleteNote : HomeEvent()
     object LoadNotes : HomeEvent()
     object RefreshNotes : HomeEvent()
 }

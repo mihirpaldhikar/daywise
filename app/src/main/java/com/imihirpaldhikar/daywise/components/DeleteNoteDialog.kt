@@ -14,21 +14,38 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.imihirpaldhikar.daywise.events
+package com.imihirpaldhikar.daywise.components
 
-import com.imihirpaldhikar.daywise.data.models.database.Note
-import com.imihirpaldhikar.daywise.enums.NotePriority
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import com.imihirpaldhikar.daywise.events.HomeEvent
 
-sealed class NoteEvent {
-    data class NoteTitleChanged(val title: String) : NoteEvent()
-    data class NoteContentChanged(val content: String) : NoteEvent()
-    data class UpdateNote(val noteId: String) : NoteEvent()
-    data class DeleteNote(val noteId: String, val navigator: DestinationsNavigator) : NoteEvent()
-    data class LoadNote(val noteId: String) : NoteEvent()
-    data class TogglePriority(val priority: NotePriority) : NoteEvent()
-    data class ShowDeleteDialog(val show: Boolean) : NoteEvent()
-    data class EditNote(val enable: Boolean) : NoteEvent()
-    data class Close(val navigator: DestinationsNavigator) : NoteEvent()
-    object SaveNote : NoteEvent()
+@Composable
+fun DeleteNoteDialog(
+    onDismiss: () -> Unit,
+    onDelete: () -> Unit,
+    onCancel: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss, title = {
+            Text(text = "Delete Note?")
+        }, confirmButton = {
+            Row {
+                TextButton(
+                    onClick = onCancel
+                ) {
+                    Text(text = "Cancel")
+                }
+                TextButton(onClick = onDelete) {
+                    Text(text = "Delete", color = MaterialTheme.colorScheme.error)
+                }
+            }
+        },
+        text = {
+            Text(text = "This action will delete the note. Once deleted, the note cannot be recovered.")
+        })
 }

@@ -38,6 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.imihirpaldhikar.daywise.R
+import com.imihirpaldhikar.daywise.components.DeleteNoteDialog
 import com.imihirpaldhikar.daywise.components.NoteCard
 import com.imihirpaldhikar.daywise.data.models.parcelize.NoteParcel
 import com.imihirpaldhikar.daywise.events.HomeEvent
@@ -59,7 +60,7 @@ fun HomeScreen(
     val notes = homeState.notes
     val isDarkMode = isSystemInDarkTheme()
 
-    if (homeViewModel.showSortDialog) {
+    if (homeState.showSortDialog) {
         AlertDialog(onDismissRequest = {
             homeViewModel.onEvent(HomeEvent.ShowSortOptions(false))
         }, title = {
@@ -103,6 +104,18 @@ fun HomeScreen(
                 })
             })
     }
+
+    if (homeState.showDeleteDialog) {
+        DeleteNoteDialog(onDismiss = {
+            homeViewModel.onEvent(HomeEvent.ShowDeleteDialog(false, null))
+        }, onDelete = {
+            homeViewModel.onEvent(HomeEvent.DeleteNote)
+            homeViewModel.onEvent(HomeEvent.ShowDeleteDialog(false, null))
+        }, onCancel = {
+            homeViewModel.onEvent(HomeEvent.ShowDeleteDialog(false, null))
+        })
+    }
+
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
@@ -188,7 +201,12 @@ fun HomeScreen(
                                     )
                                 },
                                 onDelete = {
-                                    homeViewModel.onEvent(HomeEvent.DeleteNote(notes[it]))
+                                    homeViewModel.onEvent(
+                                        HomeEvent.ShowDeleteDialog(
+                                            true,
+                                            notes[it]
+                                        )
+                                    )
                                 }, isDarkMode = isDarkMode
                             )
                         }

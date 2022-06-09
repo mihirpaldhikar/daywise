@@ -66,7 +66,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
+import com.imihirpaldhikar.daywise.components.DeleteNoteDialog
 import com.imihirpaldhikar.daywise.data.models.parcelize.NoteParcel
+import com.imihirpaldhikar.daywise.events.HomeEvent
 import com.imihirpaldhikar.daywise.events.NoteEvent
 import com.imihirpaldhikar.daywise.presentations.destinations.NoteScreenDestination
 import com.imihirpaldhikar.daywise.states.NoteOperationState
@@ -105,6 +107,17 @@ fun NoteScreen(
         }
     }
 
+    if (noteState.showDeleteDialog) {
+        DeleteNoteDialog(onDismiss = {
+            noteViewModel.onEvent(NoteEvent.ShowDeleteDialog(false))
+        }, onDelete = {
+            noteViewModel.onEvent(NoteEvent.DeleteNote(noteParcel!!.noteId, navigator))
+            noteViewModel.onEvent(NoteEvent.ShowDeleteDialog(false))
+        }, onCancel = {
+            noteViewModel.onEvent(NoteEvent.ShowDeleteDialog(false))
+        })
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -112,38 +125,50 @@ fun NoteScreen(
                 title = {},
                 actions = {
 
-                    if (!noteState.enableEditing) {
-                        IconButton(
-                            enabled = noteState.content.isNotEmpty() && noteState.title.isNotEmpty(),
-                            onClick = {
-                                noteViewModel.onEvent(NoteEvent.EditNote(true))
-                            }) {
-                            Icon(
-                                Icons.Outlined.Edit, contentDescription = "Save",
-                                tint = if (noteState.content.isNotEmpty() && noteState.title.isNotEmpty()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
-                            )
+                    if (!noteState.isLoading) {
+                        if (!noteState.enableEditing) {
+                            IconButton(
+                                enabled = noteState.content.isNotEmpty() && noteState.title.isNotEmpty(),
+                                onClick = {
+                                    noteViewModel.onEvent(NoteEvent.ShowDeleteDialog(true))
+                                }) {
+                                Icon(
+                                    Icons.Outlined.Delete, contentDescription = "Save",
+                                    tint = MaterialTheme.colorScheme.error,
+                                )
+                            }
+                            IconButton(
+                                enabled = noteState.content.isNotEmpty() && noteState.title.isNotEmpty(),
+                                onClick = {
+                                    noteViewModel.onEvent(NoteEvent.EditNote(true))
+                                }) {
+                                Icon(
+                                    Icons.Outlined.Edit, contentDescription = "Save",
+                                    tint = if (noteState.content.isNotEmpty() && noteState.title.isNotEmpty()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+                                )
+                            }
                         }
-                    }
 
-                    if (noteState.enableEditing) {
-                        IconButton(
-                            enabled = noteState.content.isNotEmpty() && noteState.title.isNotEmpty(),
-                            onClick = {
-                                if (noteParcel != null) {
-                                    noteViewModel.onEvent(NoteEvent.UpdateNote(noteParcel.noteId))
-                                } else {
-                                    noteViewModel.onEvent(NoteEvent.SaveNote)
-                                }
-                                noteViewModel.onEvent(NoteEvent.Close(navigator))
-                            }) {
-                            Icon(
-                                if (noteParcel !== null) {
-                                    Icons.Outlined.Check
-                                } else {
-                                    Icons.Outlined.Save
-                                }, contentDescription = "Save",
-                                tint = if (noteState.content.isNotEmpty() && noteState.title.isNotEmpty()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
-                            )
+                        if (noteState.enableEditing) {
+                            IconButton(
+                                enabled = noteState.content.isNotEmpty() && noteState.title.isNotEmpty(),
+                                onClick = {
+                                    if (noteParcel != null) {
+                                        noteViewModel.onEvent(NoteEvent.UpdateNote(noteParcel.noteId))
+                                    } else {
+                                        noteViewModel.onEvent(NoteEvent.SaveNote)
+                                    }
+                                    noteViewModel.onEvent(NoteEvent.Close(navigator))
+                                }) {
+                                Icon(
+                                    if (noteParcel !== null) {
+                                        Icons.Outlined.Check
+                                    } else {
+                                        Icons.Outlined.Save
+                                    }, contentDescription = "Save",
+                                    tint = if (noteState.content.isNotEmpty() && noteState.title.isNotEmpty()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+                                )
+                            }
                         }
                     }
                 },

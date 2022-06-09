@@ -22,6 +22,9 @@ import com.imihirpaldhikar.daywise.enums.NotePriority
 data class HomeDataState(
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
+    val showSortDialog: Boolean = false,
+    val showDeleteDialog: Boolean = false,
+    val selectedNote: Note? = null,
     val notes: List<Note> = listOf(
         Note(
             id = "",

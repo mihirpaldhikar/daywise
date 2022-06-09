@@ -24,6 +24,7 @@ import androidx.lifecycle.viewModelScope
 import com.imihirpaldhikar.daywise.data.models.database.Note
 import com.imihirpaldhikar.daywise.data.repositories.NotesRepository
 import com.imihirpaldhikar.daywise.enums.NotePriority
+import com.imihirpaldhikar.daywise.events.HomeEvent
 import com.imihirpaldhikar.daywise.events.NoteEvent
 import com.imihirpaldhikar.daywise.states.NoteDataState
 import com.imihirpaldhikar.daywise.states.NoteOperationState
@@ -96,7 +97,9 @@ class NoteViewModel @Inject constructor(
             }
             is NoteEvent.DeleteNote -> {
                 viewModelScope.launch {
-                    notesRepository.deleteNote(event.note)
+                    val note = notesRepository.getNoteById(event.noteId)
+                    notesRepository.deleteNote(note!!)
+                    event.navigator.navigateUp()
                 }
             }
             is NoteEvent.LoadNote -> {
@@ -122,6 +125,9 @@ class NoteViewModel @Inject constructor(
                     noteState = noteState.copy(enableEditing = true)
                     noteState = noteState.copy(isLoading = false)
                 }
+            }
+            is NoteEvent.ShowDeleteDialog -> {
+                noteState = noteState.copy(showDeleteDialog = true)
             }
         }
     }
