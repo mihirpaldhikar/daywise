@@ -30,6 +30,7 @@ import com.imihirpaldhikar.daywise.states.NoteOperationState
 import com.imihirpaldhikar.daywise.utils.RandomUID
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.sql.Date
@@ -52,7 +53,6 @@ class NoteViewModel @Inject constructor(
         NotePriority.LOW
     )
     var selectedPriority by mutableStateOf(2)
-    var enableEditing by mutableStateOf<Boolean>(false)
     fun onEvent(event: NoteEvent) {
         when (event) {
             is NoteEvent.NoteTitleChanged -> {
@@ -63,6 +63,11 @@ class NoteViewModel @Inject constructor(
             }
             is NoteEvent.TogglePriority -> {
                 selectedPriority = event.priority.priority - 1
+            }
+            is NoteEvent.Close -> {
+                viewModelScope.launch {
+                    event.navigator.navigateUp()
+                }
             }
             is NoteEvent.SaveNote -> {
                 viewModelScope.launch {
@@ -98,19 +103,27 @@ class NoteViewModel @Inject constructor(
             }
             is NoteEvent.LoadNote -> {
                 viewModelScope.launch {
+                    noteState = noteState.copy(isLoading = true)
+                    delay(450)
                     val noteData = notesRepository.getNoteById(event.noteId)
                     noteState = noteState.copy(
                         title = noteData!!.title,
                         content = noteData.content,
                         priority = noteData.priority,
-                        updatedOn = noteData.updatedOn
+                        updatedOn = noteData.updatedOn,
+                        isLoading = false
                     )
                     selectedPriority = noteData.priority.priority - 1
-                    enableEditing = false
+                    noteState = noteState.copy(enableEditing = false)
                 }
             }
             is NoteEvent.EditNote -> {
-                enableEditing = event.enable
+                viewModelScope.launch {
+                    noteState = noteState.copy(isLoading = true)
+                    delay(450)
+                    noteState = noteState.copy(enableEditing = false)
+                    noteState = noteState.copy(isLoading = false)
+                }
             }
         }
     }

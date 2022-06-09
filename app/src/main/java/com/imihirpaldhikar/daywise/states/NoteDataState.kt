@@ -27,5 +27,7 @@ data class NoteDataState(
     val isContentError: Boolean = false,
     val isTitleError: Boolean = false,
     val titleErrorMessage: String = "",
+    val isLoading: Boolean = true,
+    val enableEditing: Boolean = false,
     val contentErrorMessage: String = "",
 )
