@@ -24,7 +24,10 @@ import kotlinx.coroutines.flow.Flow
 interface NotesSource {
 
     @Query("SELECT * FROM notes ORDER BY updated_on DESC")
-    fun getNotes(): Flow<List<Note>>
+    fun getNotesByLastUpdated(): Flow<List<Note>>
+
+    @Query("SELECT * FROM notes")
+    fun getNotesByPriority(): Flow<List<Note>>
 
     @Query("SELECT * FROM notes WHERE id LIKE :id")
     suspend fun getNoteById(id: String): Note?

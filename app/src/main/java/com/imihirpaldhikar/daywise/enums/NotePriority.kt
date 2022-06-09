@@ -14,15 +14,13 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.imihirpaldhikar.daywise.events
+package com.imihirpaldhikar.daywise.enums
 
-import com.imihirpaldhikar.daywise.data.models.database.Note
-import com.imihirpaldhikar.daywise.enums.SortNote
+import android.graphics.Color
 
-sealed class HomeEvent {
-    data class DeleteNote(val note: Note) : HomeEvent()
-    data class SortNotes(val sort: SortNote) : HomeEvent()
-    data class ShowSortOptions(val show: Boolean) : HomeEvent()
-    data class ToggleSort(val sort: SortNote) : HomeEvent()
-    object LoadNotes : HomeEvent()
+enum class NotePriority(val priorityName: String, val priority: Int, val color: Int) {
+    HIGH(priorityName = "High", priority = 1, color = Color.BLUE),
+    MEDIUM(priorityName = "Medium", priority = 2, color = Color.RED),
+    NORMAL(priorityName = "Normal", priority = 3, color = Color.GREEN),
+    LOW(priorityName = "Low", priority = 4, color = Color.RED),
 }

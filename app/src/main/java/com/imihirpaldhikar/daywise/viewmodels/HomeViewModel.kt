@@ -21,9 +21,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.imihirpaldhikar.daywise.data.models.database.Note
 import com.imihirpaldhikar.daywise.data.repositories.NotesRepository
+import com.imihirpaldhikar.daywise.enums.SortNote
 import com.imihirpaldhikar.daywise.events.HomeEvent
+import com.imihirpaldhikar.daywise.states.HomeDataState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.sql.Date
@@ -35,23 +36,51 @@ class HomeViewModel @Inject constructor(
     private val notesRepository: NotesRepository
 ) : ViewModel() {
 
-    var notes by mutableStateOf<List<Note>>(emptyList())
+    var homeState by mutableStateOf(HomeDataState())
 
-    init {
-        viewModelScope.launch {
-            notesRepository.getAllNotes().collect {
-                notes = it
-            }
-        }
-    }
+    var showSortDialog by mutableStateOf<Boolean>(false)
+    val sortOptions = listOf<SortNote>(
+        SortNote.UPDATED,
+        SortNote.PRIORITY,
+    )
+    var selectedSort by mutableStateOf<Int>(0)
 
     fun onEvent(event: HomeEvent) {
         when (event) {
             is HomeEvent.DeleteNote -> {
                 viewModelScope.launch {
+                    homeState = homeState.copy(isLoading = true)
                     notesRepository.deleteNote(event.note)
-                    notesRepository.getAllNotes().collect {
-                        notes = it
+                    notesRepository.getAllNotesByLastUpdated().collect {
+                        homeState = homeState.copy(notes = it, isLoading = false)
+                    }
+                }
+            }
+            is HomeEvent.SortNotes -> {
+                viewModelScope.launch {
+                    homeState = homeState.copy(isLoading = true)
+                    if (event.sort == SortNote.UPDATED) {
+                        notesRepository.getAllNotesByLastUpdated().collect {
+                            homeState = homeState.copy(notes = it, isLoading = false)
+                        }
+                    } else {
+                        notesRepository.getAllNotesByPriority().collect {
+                            homeState = homeState.copy(notes = it, isLoading = false)
+                        }
+                    }
+                }
+            }
+            is HomeEvent.ShowSortOptions -> {
+                showSortDialog = event.show
+            }
+            is HomeEvent.ToggleSort -> {
+                selectedSort = event.sort.ordinal
+            }
+            is HomeEvent.LoadNotes -> {
+                viewModelScope.launch {
+                    homeState = homeState.copy(isLoading = true)
+                    notesRepository.getAllNotesByLastUpdated().collect {
+                        homeState = homeState.copy(notes = it, isLoading = false)
                     }
                 }
             }

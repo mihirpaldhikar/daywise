@@ -19,6 +19,7 @@ package com.imihirpaldhikar.daywise.data.repositories
 import com.imihirpaldhikar.daywise.AppDatabase
 import com.imihirpaldhikar.daywise.data.models.database.Note
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class NotesRepository @Inject constructor(
@@ -27,8 +28,14 @@ class NotesRepository @Inject constructor(
 
     private val notesSource = appDatabase.notesDao()
 
-    suspend fun getAllNotes(): Flow<List<Note>> {
-        return notesSource.getNotes()
+    suspend fun getAllNotesByLastUpdated(): Flow<List<Note>> {
+        return notesSource.getNotesByLastUpdated()
+    }
+
+    suspend fun getAllNotesByPriority(): Flow<List<Note>> {
+        return notesSource.getNotesByPriority().map {
+            it.sortedBy { note -> note.priority.priority }
+        }
     }
 
     suspend fun getNoteById(noteId: String): Note? {

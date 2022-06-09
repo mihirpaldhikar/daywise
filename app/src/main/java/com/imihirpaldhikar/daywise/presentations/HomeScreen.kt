@@ -21,17 +21,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.imihirpaldhikar.daywise.data.models.parcelize.NoteParcel
 import com.imihirpaldhikar.daywise.events.HomeEvent
@@ -47,8 +53,59 @@ fun HomeScreen(
     navigator: DestinationsNavigator
 ) {
 
+    val context = LocalContext.current
     val homeViewModel = hiltViewModel<HomeViewModel>()
-    val notes = homeViewModel.notes
+    val homeState = homeViewModel.homeState
+    val notes = homeState.notes
+
+    LaunchedEffect(homeViewModel, context) {
+        homeViewModel.onEvent(HomeEvent.LoadNotes)
+    }
+
+    if (homeViewModel.showSortDialog) {
+        AlertDialog(onDismissRequest = {
+            homeViewModel.onEvent(HomeEvent.ShowSortOptions(false))
+        }, title = {
+            Text(text = "Sort Notes By")
+        }, confirmButton = {
+            TextButton(onClick = {
+                homeViewModel.onEvent(HomeEvent.SortNotes(homeViewModel.sortOptions[homeViewModel.selectedSort]))
+                homeViewModel.onEvent(HomeEvent.ShowSortOptions(false))
+            }) {
+                Text(text = "Sort")
+            }
+        },
+            text = {
+                LazyColumn(content = {
+                    items(homeViewModel.sortOptions.size) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Start,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .selectable(
+                                    selected = it == homeViewModel.selectedSort,
+                                    onClick = {
+                                        homeViewModel.onEvent(HomeEvent.ToggleSort(homeViewModel.sortOptions[it]))
+                                    }
+                                )
+                        ) {
+                            RadioButton(
+                                selected = it == homeViewModel.selectedSort,
+                                onClick = {
+                                    homeViewModel.onEvent(HomeEvent.ToggleSort(homeViewModel.sortOptions[it]))
+                                }
+                            )
+                            Text(
+                                text = homeViewModel.sortOptions[it].sortName,
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+
+                        }
+                    }
+                })
+            })
+    }
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
@@ -65,24 +122,32 @@ fun HomeScreen(
             SmallTopAppBar(
                 title = {
                     Text(text = "Daywise")
+                },
+                actions = {
+                    IconButton(onClick = {
+                        homeViewModel.onEvent(HomeEvent.ShowSortOptions(true))
+                    }) {
+                        Icon(Icons.Outlined.Sort, contentDescription = "Sort Notes")
+                    }
                 }
             )
-        }
+        },
     ) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
+                .padding(padding),
+            contentAlignment = Alignment.Center
         ) {
-            if (notes.isEmpty()) {
-                return@Box Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "No Notes!", textAlign = TextAlign.Center)
-                }
 
+            if (homeState.isLoading) {
+                return@Box CircularProgressIndicator()
             }
+
+            if (notes.isEmpty()) {
+                return@Box Text(text = "No Notes")
+            }
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -127,8 +192,12 @@ fun HomeScreen(
                                     ) {
                                         Text(
                                             text = notes[it].title,
-                                            style = MaterialTheme.typography.titleLarge,
-                                            modifier = Modifier.padding(bottom = 5.dp),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.W500,
+                                            fontSize = 20.sp,
+                                            modifier = Modifier
+                                                .padding(bottom = 5.dp)
+                                                .fillMaxWidth(0.94f),
                                             maxLines = 2,
                                             overflow = TextOverflow.Ellipsis,
                                         )
@@ -136,12 +205,12 @@ fun HomeScreen(
                                             modifier = Modifier
                                                 .size(10.dp)
                                                 .clip(CircleShape)
-                                                .background(MaterialTheme.colorScheme.error)
+                                                .background(Color(notes[it].priority.color))
                                         )
                                     }
                                     Text(
                                         text = notes[it].content,
-                                        style = MaterialTheme.typography.bodyMedium,
+                                        style = MaterialTheme.typography.bodySmall,
                                         maxLines = 2,
                                         overflow = TextOverflow.Ellipsis,
                                     )
@@ -150,7 +219,11 @@ fun HomeScreen(
                                         verticalAlignment = Alignment.Bottom,
                                         horizontalArrangement = Arrangement.End
                                     ) {
-                                        Text(text = homeViewModel.getCountOfDays(notes[it].updatedOn))
+                                        Text(
+                                            text = homeViewModel.getCountOfDays(notes[it].updatedOn),
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = MaterialTheme.colorScheme.outline
+                                        )
                                     }
                                 }
                             }
@@ -159,6 +232,7 @@ fun HomeScreen(
                     }
                 })
         }
+
     }
 
 }

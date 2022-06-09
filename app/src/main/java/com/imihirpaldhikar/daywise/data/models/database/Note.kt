@@ -19,6 +19,7 @@ package com.imihirpaldhikar.daywise.data.models.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.imihirpaldhikar.daywise.enums.NotePriority
 
 @Entity(tableName = "notes")
 data class Note(
@@ -26,6 +27,7 @@ data class Note(
     val id: String,
     val title: String,
     val content: String,
+    val priority: NotePriority,
     @ColumnInfo(name = "created_on") val createdOn: Long,
     @ColumnInfo(name = "updated_on") val updatedOn: Long
 )

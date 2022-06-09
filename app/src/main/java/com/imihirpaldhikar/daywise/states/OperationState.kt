@@ -16,8 +16,9 @@
 
 package com.imihirpaldhikar.daywise.states
 
-sealed class OperationState<T>(val data: String? = null) {
-    class Settled<T> : OperationState<T>()
-    class Success<T> : OperationState<T>()
+import com.imihirpaldhikar.daywise.data.models.database.Note
+
+sealed class OperationState<T>(val data: String? = null, val notes: List<Note>? = null) {
+    class Settled<T>(private val allNotes: List<Note>) : OperationState<T>(notes = allNotes)
     class Failed<T>(private val message: String) : OperationState<T>(data = message)
 }

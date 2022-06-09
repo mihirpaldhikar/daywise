@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imihirpaldhikar.daywise.data.models.database.Note
 import com.imihirpaldhikar.daywise.data.repositories.NotesRepository
+import com.imihirpaldhikar.daywise.enums.NotePriority
 import com.imihirpaldhikar.daywise.events.NoteEvent
 import com.imihirpaldhikar.daywise.states.NoteDataState
 import com.imihirpaldhikar.daywise.states.NoteOperationState
@@ -31,6 +32,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.sql.Date
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
@@ -42,7 +45,14 @@ class NoteViewModel @Inject constructor(
     var noteState by mutableStateOf(NoteDataState())
     private val noteChannel = Channel<NoteOperationState<Unit>>()
     val noteStatus = noteChannel.receiveAsFlow()
-
+    val priorityList = listOf<NotePriority>(
+        NotePriority.HIGH,
+        NotePriority.MEDIUM,
+        NotePriority.NORMAL,
+        NotePriority.LOW
+    )
+    var selectedPriority by mutableStateOf(2)
+    var enableEditing by mutableStateOf<Boolean>(false)
     fun onEvent(event: NoteEvent) {
         when (event) {
             is NoteEvent.NoteTitleChanged -> {
@@ -50,6 +60,9 @@ class NoteViewModel @Inject constructor(
             }
             is NoteEvent.NoteContentChanged -> {
                 noteState = noteState.copy(content = event.content)
+            }
+            is NoteEvent.TogglePriority -> {
+                selectedPriority = event.priority.priority - 1
             }
             is NoteEvent.SaveNote -> {
                 viewModelScope.launch {
@@ -60,7 +73,8 @@ class NoteViewModel @Inject constructor(
                         content = noteState.content.trim(),
                         createdOn = systemTime,
                         updatedOn = systemTime,
-                        id = UUID.randomUUID().toString()
+                        id = UUID.randomUUID().toString(),
+                        priority = priorityList[selectedPriority]
                     )
                     notesRepository.addNote(noteData)
                 }
@@ -71,7 +85,8 @@ class NoteViewModel @Inject constructor(
                     val noteData = notesRepository.getNoteById(event.noteId)!!.copy(
                         title = noteState.title.trim(),
                         content = noteState.content.trim(),
-                        updatedOn = systemTime
+                        updatedOn = systemTime,
+                        priority = priorityList[selectedPriority]
                     )
                     notesRepository.updateNote(noteData)
                 }
@@ -86,10 +101,22 @@ class NoteViewModel @Inject constructor(
                     val noteData = notesRepository.getNoteById(event.noteId)
                     noteState = noteState.copy(
                         title = noteData!!.title,
-                        content = noteData.content
+                        content = noteData.content,
+                        priority = noteData.priority,
+                        updatedOn = noteData.updatedOn
                     )
+                    selectedPriority = noteData.priority.priority - 1
+                    enableEditing = false
                 }
             }
+            is NoteEvent.EditNote -> {
+                enableEditing = event.enable
+            }
         }
+    }
+
+    fun formatDate(date: Long): String {
+        val formatter = SimpleDateFormat("MM/dd/yyyy")
+        return formatter.format(Date(date))
     }
 }

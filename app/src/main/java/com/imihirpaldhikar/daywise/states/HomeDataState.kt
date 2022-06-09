@@ -14,15 +14,21 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.imihirpaldhikar.daywise.events
+package com.imihirpaldhikar.daywise.states
 
 import com.imihirpaldhikar.daywise.data.models.database.Note
-import com.imihirpaldhikar.daywise.enums.SortNote
+import com.imihirpaldhikar.daywise.enums.NotePriority
 
-sealed class HomeEvent {
-    data class DeleteNote(val note: Note) : HomeEvent()
-    data class SortNotes(val sort: SortNote) : HomeEvent()
-    data class ShowSortOptions(val show: Boolean) : HomeEvent()
-    data class ToggleSort(val sort: SortNote) : HomeEvent()
-    object LoadNotes : HomeEvent()
-}
+data class HomeDataState(
+    val isLoading: Boolean = false,
+    val notes: List<Note> = listOf(
+        Note(
+            id = "",
+            title = "",
+            content = "",
+            priority = NotePriority.HIGH,
+            createdOn = 0,
+            updatedOn = 0
+        )
+    )
+)

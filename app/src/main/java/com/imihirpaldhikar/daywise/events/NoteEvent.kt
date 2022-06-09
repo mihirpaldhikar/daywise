@@ -17,6 +17,7 @@
 package com.imihirpaldhikar.daywise.events
 
 import com.imihirpaldhikar.daywise.data.models.database.Note
+import com.imihirpaldhikar.daywise.enums.NotePriority
 
 sealed class NoteEvent {
     data class NoteTitleChanged(val title: String) : NoteEvent()
@@ -24,5 +25,7 @@ sealed class NoteEvent {
     data class UpdateNote(val noteId: String) : NoteEvent()
     data class DeleteNote(val note: Note) : NoteEvent()
     data class LoadNote(val noteId: String) : NoteEvent()
+    data class TogglePriority(val priority: NotePriority) : NoteEvent()
+    data class EditNote(val enable: Boolean) : NoteEvent()
     object SaveNote : NoteEvent()
 }

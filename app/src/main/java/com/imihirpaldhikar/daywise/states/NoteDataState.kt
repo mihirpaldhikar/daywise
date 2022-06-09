@@ -16,9 +16,14 @@
 
 package com.imihirpaldhikar.daywise.states
 
+import com.imihirpaldhikar.daywise.enums.NotePriority
+
 data class NoteDataState(
     val title: String = "",
     val content: String = "",
+    val priority: NotePriority = NotePriority.NORMAL,
+    val updatedOn: Long = 0,
+    val createdOn: Long = 0,
     val isContentError: Boolean = false,
     val isTitleError: Boolean = false,
     val titleErrorMessage: String = "",
