@@ -34,7 +34,18 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.selection.selectable
@@ -320,7 +331,7 @@ fun NoteScreen(
                                         text = noteState.title,
                                         style = MaterialTheme.typography.titleLarge,
                                         fontWeight = FontWeight.W500,
-                                        fontSize = 25.sp,
+                                        fontSize = 30.sp,
                                         color = MaterialTheme.colorScheme.onBackground,
                                         lineHeight = 35.sp
                                     )
@@ -385,6 +396,7 @@ fun NoteScreen(
                                 Text(
                                     text = noteState.content,
                                     style = MaterialTheme.typography.bodyLarge,
+                                    fontSize = 20.sp,
                                     color = MaterialTheme.colorScheme.onBackground,
                                     lineHeight = 35.sp
                                 )
