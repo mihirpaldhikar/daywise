@@ -25,4 +25,5 @@ sealed class HomeEvent {
     data class ShowSortOptions(val show: Boolean) : HomeEvent()
     data class ToggleSort(val sort: SortNote) : HomeEvent()
     object LoadNotes : HomeEvent()
+    object RefreshNotes : HomeEvent()
 }

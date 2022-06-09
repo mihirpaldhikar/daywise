@@ -179,6 +179,7 @@ fun NoteScreen(
                                                     color = MaterialTheme.colorScheme.outline,
                                                     shape = RoundedCornerShape(10.dp)
                                                 )
+                                                .padding(0.dp)
                                                 .selectable(
                                                     selected = it == noteViewModel.selectedPriority,
                                                     onClick = {
@@ -192,10 +193,10 @@ fun NoteScreen(
                                         ) {
                                             Row(
                                                 modifier = Modifier.padding(
-                                                    end = 20.dp
+                                                    end = 15.dp
                                                 ),
                                                 verticalAlignment = Alignment.CenterVertically,
-                                                horizontalArrangement = Arrangement.SpaceEvenly
+                                                horizontalArrangement = Arrangement.Start
                                             ) {
                                                 RadioButton(
                                                     selected = it == noteViewModel.selectedPriority,
@@ -209,7 +210,8 @@ fun NoteScreen(
                                                 )
                                                 Text(
                                                     text = noteViewModel.priorityList[it].priorityName,
-                                                    modifier = Modifier.padding(top = 2.dp)
+                                                    modifier = Modifier.padding(top = 2.dp),
+                                                    style = MaterialTheme.typography.labelMedium
                                                 )
                                             }
                                         }
@@ -242,7 +244,13 @@ fun NoteScreen(
                                     singleLine = true,
                                     enabled = noteState.enableEditing,
                                     placeholder = {
-                                        Text(text = "Title...")
+                                        Text(
+                                            text = "Title...",
+                                            style = MaterialTheme.typography.titleLarge.copy(
+                                                fontWeight = FontWeight.W500,
+                                                fontSize = 25.sp
+                                            ),
+                                        )
                                     },
                                     onValueChange = {
                                         noteViewModel.onEvent(

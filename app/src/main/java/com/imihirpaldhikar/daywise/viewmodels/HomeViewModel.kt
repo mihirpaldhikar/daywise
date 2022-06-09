@@ -26,6 +26,7 @@ import com.imihirpaldhikar.daywise.enums.SortNote
 import com.imihirpaldhikar.daywise.events.HomeEvent
 import com.imihirpaldhikar.daywise.states.HomeDataState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.sql.Date
 import java.text.SimpleDateFormat
@@ -37,13 +38,16 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     var homeState by mutableStateOf(HomeDataState())
-
     var showSortDialog by mutableStateOf<Boolean>(false)
     val sortOptions = listOf<SortNote>(
         SortNote.UPDATED,
         SortNote.PRIORITY,
     )
     var selectedSort by mutableStateOf<Int>(0)
+
+    init {
+        onEvent(HomeEvent.LoadNotes)
+    }
 
     fun onEvent(event: HomeEvent) {
         when (event) {
@@ -81,6 +85,21 @@ class HomeViewModel @Inject constructor(
                     homeState = homeState.copy(isLoading = true)
                     notesRepository.getAllNotesByLastUpdated().collect {
                         homeState = homeState.copy(notes = it, isLoading = false)
+                    }
+                }
+            }
+            is HomeEvent.RefreshNotes -> {
+                viewModelScope.launch {
+                    homeState = homeState.copy(isRefreshing = true)
+                    delay(500)
+                    if (sortOptions[selectedSort] == SortNote.UPDATED) {
+                        notesRepository.getAllNotesByLastUpdated().collect {
+                            homeState = homeState.copy(notes = it, isRefreshing = false)
+                        }
+                    } else {
+                        notesRepository.getAllNotesByPriority().collect {
+                            homeState = homeState.copy(notes = it, isRefreshing = false)
+                        }
                     }
                 }
             }

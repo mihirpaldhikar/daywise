@@ -48,11 +48,10 @@ class NoteViewModel @Inject constructor(
     val noteStatus = noteChannel.receiveAsFlow()
     val priorityList = listOf<NotePriority>(
         NotePriority.HIGH,
-        NotePriority.MEDIUM,
         NotePriority.NORMAL,
-        NotePriority.LOW
+        NotePriority.LOW,
     )
-    var selectedPriority by mutableStateOf(2)
+    var selectedPriority by mutableStateOf(1)
     fun onEvent(event: NoteEvent) {
         when (event) {
             is NoteEvent.NoteTitleChanged -> {

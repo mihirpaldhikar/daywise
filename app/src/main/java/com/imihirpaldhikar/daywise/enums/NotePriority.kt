@@ -20,7 +20,6 @@ import android.graphics.Color
 
 enum class NotePriority(val priorityName: String, val priority: Int, val color: Int) {
     HIGH(priorityName = "High", priority = 1, color = Color.BLUE),
-    MEDIUM(priorityName = "Medium", priority = 2, color = Color.RED),
-    NORMAL(priorityName = "Normal", priority = 3, color = Color.GREEN),
-    LOW(priorityName = "Low", priority = 4, color = Color.RED),
+    NORMAL(priorityName = "Normal", priority = 2, color = Color.GREEN),
+    LOW(priorityName = "Low", priority = 3, color = Color.RED),
 }
