@@ -14,14 +14,31 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.imihirpaldhikar.daywise.enums
+package com.imihirpaldhikar.daywise.utils
 
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
+import android.graphics.Color
+import androidx.annotation.ColorInt
 
 
-enum class NotePriority(val priorityName: String, val priority: Int, val backgroundColor: Int) {
-    HIGH(priorityName = "High", priority = 1, backgroundColor = Color(0xfff48fb1).toArgb()),
-    NORMAL(priorityName = "Normal", priority = 2, backgroundColor = Color(0xffffab91).toArgb()),
-    LOW(priorityName = "Low", priority = 3, backgroundColor = Color(0xff81deea).toArgb()),
+object ColorManager {
+    @ColorInt
+    fun getContrastColor(@ColorInt color: Int): Int {
+        // Counting the perceptive luminance - human eye favors green color...
+        val a =
+            1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
+        val d: Int = if (a < 0.5) {
+            0 // bright colors - black font
+        } else {
+            255 // dark colors - white font
+        }
+        return Color.rgb(d, d, d)
+    }
+
+    @ColorInt
+    fun darkenColor(@ColorInt color: Int): Int {
+        return Color.HSVToColor(FloatArray(3).apply {
+            Color.colorToHSV(color, this)
+            this[2] *= 0.6f
+        })
+    }
 }

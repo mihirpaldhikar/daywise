@@ -33,7 +33,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -59,6 +58,7 @@ import com.imihirpaldhikar.daywise.data.models.parcelize.NoteParcel
 import com.imihirpaldhikar.daywise.events.NoteEvent
 import com.imihirpaldhikar.daywise.presentations.destinations.NoteScreenDestination
 import com.imihirpaldhikar.daywise.states.NoteOperationState
+import com.imihirpaldhikar.daywise.utils.ColorManager
 import com.imihirpaldhikar.daywise.viewmodels.NoteViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -75,7 +75,6 @@ fun NoteScreen(
     val noteViewModel = hiltViewModel<NoteViewModel>()
     val noteState = noteViewModel.noteState
     val noteStatus = noteViewModel.noteStatus
-
     LaunchedEffect(noteViewModel, context) {
         if (noteParcel != null) {
             noteViewModel.onEvent(NoteEvent.LoadNote(noteParcel.noteId))
@@ -174,10 +173,8 @@ fun NoteScreen(
                                         Box(
                                             modifier = Modifier
                                                 .clip(RoundedCornerShape(10.dp))
-                                                .border(
-                                                    1.dp,
-                                                    color = MaterialTheme.colorScheme.outline,
-                                                    shape = RoundedCornerShape(10.dp)
+                                                .background(
+                                                    Color(noteViewModel.priorityList[it].backgroundColor)
                                                 )
                                                 .padding(0.dp)
                                                 .selectable(
@@ -200,6 +197,13 @@ fun NoteScreen(
                                             ) {
                                                 RadioButton(
                                                     selected = it == noteViewModel.selectedPriority,
+                                                    colors = RadioButtonDefaults.colors(
+                                                        selectedColor = Color(
+                                                            ColorManager.getContrastColor(
+                                                                noteViewModel.priorityList[it].backgroundColor
+                                                            )
+                                                        )
+                                                    ),
                                                     onClick = {
                                                         noteViewModel.onEvent(
                                                             NoteEvent.TogglePriority(
@@ -211,6 +215,11 @@ fun NoteScreen(
                                                 Text(
                                                     text = noteViewModel.priorityList[it].priorityName,
                                                     modifier = Modifier.padding(top = 2.dp),
+                                                    color = Color(
+                                                        ColorManager.getContrastColor(
+                                                            noteViewModel.priorityList[it].backgroundColor
+                                                        )
+                                                    ),
                                                     style = MaterialTheme.typography.labelMedium
                                                 )
                                             }
@@ -230,6 +239,7 @@ fun NoteScreen(
                             ) {
                                 TextField(
                                     value = noteState.title,
+                                    modifier = Modifier.fillMaxWidth(),
                                     colors = TextFieldDefaults.textFieldColors(
                                         containerColor = Color.Transparent,
                                         focusedIndicatorColor = Color.Transparent,
@@ -330,7 +340,7 @@ fun NoteScreen(
                                                 modifier = Modifier
                                                     .size(10.dp)
                                                     .clip(CircleShape)
-                                                    .background(Color(noteState.priority.color))
+                                                    .background(Color(noteState.priority.backgroundColor))
                                             )
                                             Spacer(modifier = Modifier.width(5.dp))
                                             Text(

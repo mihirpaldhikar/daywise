@@ -53,10 +53,9 @@ class HomeViewModel @Inject constructor(
         when (event) {
             is HomeEvent.DeleteNote -> {
                 viewModelScope.launch {
-                    homeState = homeState.copy(isLoading = true)
                     notesRepository.deleteNote(event.note)
                     notesRepository.getAllNotesByLastUpdated().collect {
-                        homeState = homeState.copy(notes = it, isLoading = false)
+                        homeState = homeState.copy(notes = it)
                     }
                 }
             }

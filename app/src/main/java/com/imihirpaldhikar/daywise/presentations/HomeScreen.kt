@@ -17,12 +17,10 @@
 package com.imihirpaldhikar.daywise.presentations
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Sort
@@ -30,16 +28,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.imihirpaldhikar.daywise.components.NoteCard
 import com.imihirpaldhikar.daywise.data.models.parcelize.NoteParcel
 import com.imihirpaldhikar.daywise.events.HomeEvent
 import com.imihirpaldhikar.daywise.presentations.destinations.NoteScreenDestination
@@ -58,6 +52,7 @@ fun HomeScreen(
     val homeViewModel = hiltViewModel<HomeViewModel>()
     val homeState = homeViewModel.homeState
     val notes = homeState.notes
+    val isDarkMode = isSystemInDarkTheme()
 
     if (homeViewModel.showSortDialog) {
         AlertDialog(onDismissRequest = {
@@ -152,83 +147,29 @@ fun HomeScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(
-                            end = 10.dp,
-                            start = 10.dp,
+                            end = 15.dp,
+                            start = 15.dp,
                         ),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     content = {
                         items(notes.size) {
-                            Column {
-                                Card {
-                                    Column(
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .combinedClickable(
-                                                onClick = {
-                                                    navigator.navigate(
-                                                        NoteScreenDestination(
-                                                            noteParcel = NoteParcel(
-                                                                noteId = notes[it].id,
-                                                                isUpdate = true,
-                                                            )
-                                                        )
-                                                    )
-                                                },
-                                                onLongClick = {
-                                                    homeViewModel.onEvent(HomeEvent.DeleteNote(notes[it]))
-                                                }
+                            NoteCard(
+                                note = notes[it],
+                                modified = homeViewModel.getCountOfDays(notes[it].updatedOn),
+                                onClick = {
+                                    navigator.navigate(
+                                        NoteScreenDestination(
+                                            noteParcel = NoteParcel(
+                                                noteId = notes[it].id,
+                                                isUpdate = true,
                                             )
-                                            .padding(
-                                                end = 15.dp,
-                                                start = 15.dp,
-                                                top = 15.dp,
-                                                bottom = 10.dp,
-                                            )
-                                    ) {
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween,
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Text(
-                                                text = notes[it].title,
-                                                style = MaterialTheme.typography.titleMedium,
-                                                fontWeight = FontWeight.W500,
-                                                fontSize = 20.sp,
-                                                modifier = Modifier
-                                                    .padding(bottom = 5.dp)
-                                                    .fillMaxWidth(0.94f),
-                                                maxLines = 2,
-                                                overflow = TextOverflow.Ellipsis,
-                                            )
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(10.dp)
-                                                    .clip(CircleShape)
-                                                    .background(Color(notes[it].priority.color))
-                                            )
-                                        }
-                                        Text(
-                                            text = notes[it].content,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            maxLines = 2,
-                                            overflow = TextOverflow.Ellipsis,
                                         )
-                                        Row(
-                                            modifier = Modifier.fillMaxSize(),
-                                            verticalAlignment = Alignment.Bottom,
-                                            horizontalArrangement = Arrangement.End
-                                        ) {
-                                            Text(
-                                                text = homeViewModel.getCountOfDays(notes[it].updatedOn),
-                                                style = MaterialTheme.typography.labelMedium,
-                                                color = MaterialTheme.colorScheme.outline
-                                            )
-                                        }
-                                    }
-                                }
-                                Spacer(modifier = Modifier.height(10.dp))
-                            }
+                                    )
+                                },
+                                onDelete = {
+                                    homeViewModel.onEvent(HomeEvent.DeleteNote(notes[it]))
+                                }, isDarkMode = isDarkMode
+                            )
                         }
                     })
             }
