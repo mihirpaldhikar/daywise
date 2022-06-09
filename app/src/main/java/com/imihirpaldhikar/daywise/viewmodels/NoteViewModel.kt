@@ -65,9 +65,8 @@ class NoteViewModel @Inject constructor(
                 selectedPriority = event.priority.priority - 1
             }
             is NoteEvent.Close -> {
-                viewModelScope.launch {
-                    event.navigator.navigateUp()
-                }
+                event.navigator.navigateUp()
+
             }
             is NoteEvent.SaveNote -> {
                 viewModelScope.launch {
@@ -121,7 +120,7 @@ class NoteViewModel @Inject constructor(
                 viewModelScope.launch {
                     noteState = noteState.copy(isLoading = true)
                     delay(450)
-                    noteState = noteState.copy(enableEditing = false)
+                    noteState = noteState.copy(enableEditing = true)
                     noteState = noteState.copy(isLoading = false)
                 }
             }
