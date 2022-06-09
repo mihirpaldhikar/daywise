@@ -331,8 +331,12 @@ fun NoteScreen(
                                     ),
                                     enabled = noteState.enableEditing,
                                     placeholder = {
-                                        Text(text = "Add your note...")
+                                        Text(
+                                            text = "Add your note...",
+                                            style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp)
+                                        )
                                     },
+                                    textStyle = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp),
                                     modifier = Modifier.fillMaxWidth(),
                                     onValueChange = {
                                         noteViewModel.onEvent(

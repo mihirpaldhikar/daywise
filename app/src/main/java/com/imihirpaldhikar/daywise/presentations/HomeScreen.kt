@@ -186,6 +186,24 @@ fun HomeScreen(
                         ),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     content = {
+                        item {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Start
+                            ) {
+                                Text(
+                                    text = "Sorting By : ",
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                                Text(
+                                    text = homeViewModel.sortOptions[homeViewModel.selectedSort].sortName,
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                            }
+                        }
                         items(notes.size) {
                             NoteCard(
                                 note = notes[it],
