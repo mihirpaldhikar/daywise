@@ -127,7 +127,7 @@ class NoteViewModel @Inject constructor(
                 }
             }
             is NoteEvent.ShowDeleteDialog -> {
-                noteState = noteState.copy(showDeleteDialog = true)
+                noteState = noteState.copy(showDeleteDialog = event.show)
             }
         }
     }
